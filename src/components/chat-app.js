@@ -3,7 +3,9 @@ import './layout/navigation/chat-header.js';
 import './data/chat-data.js';
 import './data/chat-auth.js';
 import './data/chat-login.js';
+import './data/chat-store.js';
 import firebase from 'firebase/app';
+
 class ChatApp extends LitElement {
  constructor() {
    super();
@@ -84,25 +86,30 @@ class ChatApp extends LitElement {
  }
  sendMessage(e) {
    e.preventDefault();
-   this.database = firebase.database();
-   this.database.ref().child('messages').push({
-     content: this.message,
-     user: this.user.uid,
-     email: this.user.email,
-     date: new Date().getTime()
-   }).then(snapshot => {
-     this.message = '';
-   });
+   this.database = firebase.firestore();
+
+    this.database.collection('messages').add({
+      content: this.message,
+      user: this.user.uid,
+      email: this.user.email,
+      date: new Date().getTime()
+    });
+    this.message = '';
+  
  }
  render() {
    return html`
      <section>
-       <chat-data
+       <!--<chat-data
          id="data"
          path="messages"
          @child-changed="${this.messageAdded}">
-       </chat-data>
-       <chat-header></chat-header>
+       </chat-data>-->
+       <chat-store
+         collection="messages"
+         @child-changed="${this.messageAdded}">
+       </chat-store>
+       <slot name="header"></slot>
        <main>
          ${ !this.logged ?
            html`

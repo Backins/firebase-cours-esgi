@@ -17,18 +17,18 @@
                 font-family: sans-serif;
                 background-color: #fefefe;
             }
-            chat-app[unresolved] {
+            chat-app {
                 display: block;
                 background-color: #ffffff;
             }
-            chat-app[unresolved] header {
+            chat-app header {
                 height: 48px;
                 display: flex;
                 justify-content: center;
                 align-items: center;
                 border-bottom: solid #eeeeee 1px;
             }
-            chat-app[unresolved] img {
+            chat-app img {
                 height: 42px;
                 width: 42px;
                 display: block;
@@ -38,7 +38,7 @@
     <body>
         <script src="./config.js"></script>
         <chat-app unresolved>
-            <header><img src="./src/assets/images/1f680.png" alt="Logo"> Firechat</header>
+            <header slot="header"><img src="./src/assets/images/1f680.png" alt="Logo"> Firechat</header>
         </chat-app>
         <script type="module" src="./src/components/chat-app.js"></script>
     </body>
