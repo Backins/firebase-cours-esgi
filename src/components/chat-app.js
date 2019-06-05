@@ -3,11 +3,8 @@ import './layout/navigation/chat-header.js';
 import './data/chat-data.js';
 import './data/chat-auth.js';
 import './data/chat-login.js';
-
 import firebase from 'firebase/app';
-
 class ChatApp extends LitElement {
-
  constructor() {
    super();
    this.user = {};
@@ -16,7 +13,6 @@ class ChatApp extends LitElement {
    this.messages = [];
    this.logged = false;
  }
-
  static get properties() {
    return {
      unresolved: {
@@ -30,7 +26,6 @@ class ChatApp extends LitElement {
      logged: Boolean
    };
  }
-
  static get styles() {
   return css`
     :host {
@@ -52,7 +47,6 @@ class ChatApp extends LitElement {
     footer form input {
       width: 100%;
     }
-
     ul {
       position: relative;
       display: flex;
@@ -62,7 +56,6 @@ class ChatApp extends LitElement {
       margin: 0;
       margin-bottom: 3em;
     }
-
     ul li {
       display: block;
       padding: 0.5rem 1rem;
@@ -80,22 +73,18 @@ class ChatApp extends LitElement {
     }
   `;
 }
-
  firstUpdated() {
    this.unresolved = false;
    this.data = this.shadowRoot.querySelector("#data");
    this.logged = localStorage.getItem('logged') == 'true' ? true : false;
  }
-
  handleLogin(e) {
    this.user = e.detail.user;
    this.logged = localStorage.getItem('logged') == 'true' ? true : false;
  }
-
  sendMessage(e) {
    e.preventDefault();
    this.database = firebase.database();
-
    this.database.ref().child('messages').push({
      content: this.message,
      user: this.user.uid,
@@ -105,7 +94,6 @@ class ChatApp extends LitElement {
      this.message = '';
    });
  }
-
  render() {
    return html`
      <section>
@@ -147,15 +135,15 @@ class ChatApp extends LitElement {
      </section>
    `;
  }
-
  messageAdded(e) {
    this.messages = e.detail;
+   setTimeout(function(){
+       window.scrollTo(0, document.body.scrollHeight);
+   }, 0);
  }
-
  userAdded(e) {
    this.users = e.detail;
  }
-
  getDate(timestamp) {
    const date = new Date(timestamp);
    // Hours part from the timestamp
@@ -164,7 +152,6 @@ class ChatApp extends LitElement {
    const minutes = "0" + date.getMinutes();
    // Seconds part from the timestamp
    const seconds = "0" + date.getSeconds();
-
    // Will display time in 10:30:23 format
    return `${hours}:${minutes.substr(-2)}:${seconds.substr(-2)}`;
  }
