@@ -19,7 +19,7 @@ export class ChatStore extends LitElement {
     firstUpdated(){
         firebase.initializeApp(document.config);
 
-        firebase.firestore().collection(this.collection).onSnapshot(ref => {
+        firebase.firestore().collection(this.collection).orderBy('date', 'asc').onSnapshot(ref => {
             ref.docChanges().forEach(change => {
                 const { newIndex, oldIndex, doc, type } = change;
                 if(type == 'added') {

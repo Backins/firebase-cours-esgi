@@ -97,6 +97,28 @@ class ChatApp extends LitElement {
     this.message = '';
   
  }
+
+ sendSubscription() {
+  if (Notification.permission === 'granted') {
+    navigator.serviceWorker.ready
+      .then(registration => {
+        registration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: this.urlBase64ToUint8Array(document.config.publicKey)
+        }).then(async subscribtion => {
+          subscribtion.id = this.user.uid;
+          await fetch('http://localhost:8085/subscribe', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(subscribtion)
+          })
+        });
+      });
+  }
+}
+
  render() {
    return html`
      <section>
@@ -117,6 +139,7 @@ class ChatApp extends LitElement {
              <chat-login @user-logged="${this.handleLogin}"></chat-login>
             `: html`
              <h2>Hi, ${this.user.email}</h2>
+             <button @click="${this.subscribe}">Subscribe</button>
              <ul>
                ${this.messages.map(message => html`
                  <li
@@ -142,6 +165,41 @@ class ChatApp extends LitElement {
      </section>
    `;
  }
+
+ subscribe() {
+  if (('serviceWorker' in navigator) || ('PushManager' in window)) {
+    Notification.requestPermission()
+      .then((result) => {
+        if (result === 'denied') {
+          console.log('Permission wasn\'t granted. Allow a retry.');
+          return;
+        }
+        if (result === 'default') {
+          console.log('The permission request was dismissed.');
+          return;
+        }
+        console.log('Notification granted', result);
+        this.sendSubscription();
+        // Do something with the granted permission.
+      });
+  }
+}
+
+urlBase64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding)
+    .replace(/-/g, '+')
+    .replace(/_/g, '/');
+
+  const rawData = window.atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
+
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i);
+  }
+  return outputArray;
+}
+
  messageAdded(e) {
    this.messages = e.detail;
    setTimeout(function(){
